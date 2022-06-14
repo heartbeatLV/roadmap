@@ -31,11 +31,11 @@ class CommentObserver {
             ->where('user_id', '!=', auth()->id()) // Don't get the current user, they obviously already know about the new comment
             ->pluck('user_id') ?? collect();
 
-        User::query()->whereIn('id', $userIds->toArray())->get()->each(static function (User $user) use ($comment) : void {
-            $user->notify(new ItemHasNewCommentNotification($comment));
-        });
+        // User::query()->whereIn('id', $userIds->toArray())->get()->each(static function (User $user) use ($comment) : void {
+        //     $user->notify(new ItemHasNewCommentNotification($comment));
+        // });
 
-        $comment->parent?->user->notify(new CommentHasReplyNotification($comment));
+        // $comment->parent?->user->notify(new CommentHasReplyNotification($comment));
     }
 
     public function deleting(Comment $comment) : void {

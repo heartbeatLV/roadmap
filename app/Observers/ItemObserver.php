@@ -60,11 +60,11 @@ class ItemObserver {
         }
 
         if ($isDirty) {
-            $users = $item->subscribedVotes()->with('user')->get()->pluck('user');
+            // $users = $item->subscribedVotes()->with('user')->get()->pluck('user');
 
-            $users->each(static function (User $user) use ($item) : void {
-                $user->notify(new ItemUpdatedNotification($item));
-            });
+            // $users->each(static function (User $user) use ($item) : void {
+            //     $user->notify(new ItemUpdatedNotification($item));
+            // });
         }
     }
 
