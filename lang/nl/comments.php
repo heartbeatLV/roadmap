@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 return [
-    'comment' => 'Opmerking',
-    'item-author' => 'Item auteur',
-    'click-to-copy' => 'Klik om link naar deze opmerking te kopiëren',
+    'comment'             => 'Opmerking',
+    'item-author'         => 'Item auteur',
+    'click-to-copy'       => 'Klik om link naar deze opmerking te kopiëren',
     'mention-helper-text' => 'Je kunt @ gebruiken om iemand te noemen.',
-    'reply' => 'Reageren',
-    'cancel' => 'Annuleren',
-    'submit' => 'Versturen',
+    'reply'               => 'Reageren',
+    'cancel'              => 'Annuleren',
+    'submit'              => 'Versturen',
 ];

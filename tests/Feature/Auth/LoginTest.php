@@ -1,6 +1,8 @@
 <?php
 
-test('The login screen can be rendered by guests', function () {
+declare(strict_types = 1);
+
+test('The login screen can be rendered by guests', function () : void {
     $response = $this->get(route('login'));
 
     $response->assertStatus(200);
@@ -8,7 +10,7 @@ test('The login screen can be rendered by guests', function () {
     $response->assertViewIs('auth.login');
 });
 
-test('users get redirected away from login', function () {
+test('users get redirected away from login', function () : void {
     $user = createUser();
 
     $response = $this->actingAs($user)->get(route('login'));
@@ -19,11 +21,11 @@ test('users get redirected away from login', function () {
     $this->assertAuthenticatedAs($user);
 });
 
-test('guests can login using the form', function () {
+test('guests can login using the form', function () : void {
     $user = createUser();
 
     $response = $this->post(route('login'), [
-        'email' => $user->email,
+        'email'    => $user->email,
         'password' => 'password',
     ]);
 
@@ -31,11 +33,11 @@ test('guests can login using the form', function () {
     $response->assertStatus(302);
 });
 
-test('users cannot authenticate with an incorrect password', function () {
+test('users cannot authenticate with an incorrect password', function () : void {
     $user = createUser();
 
     $response = $this->from(route('login'))->post(route('login'), [
-        'email' => $user->email,
+        'email'    => $user->email,
         'password' => 'wrong-password',
     ]);
 

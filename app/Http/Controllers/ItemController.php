@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Project;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
-{
-    public function show($projectId, $itemId = null)
-    {
+class ItemController extends Controller {
+    public function show($projectId, $itemId = null) {
         $project = null;
 
         if (!$itemId) {
@@ -21,16 +21,15 @@ class ItemController extends Controller
         }
 
         return view('item', [
-            'project' => $project,
-            'board' => $item->board,
-            'item' => $item,
-            'user' => $item->user,
-            'activities' => $item->activities()->with('causer')->latest()->limit(10)->get()
+            'project'    => $project,
+            'board'      => $item->board,
+            'item'       => $item,
+            'user'       => $item->user,
+            'activities' => $item->activities()->with('causer')->latest()->limit(10)->get(),
         ]);
     }
 
-    public function vote(Request $request, $projectId, $itemId)
-    {
+    public function vote(Request $request, $projectId, $itemId) {
         $project = Project::findOrFail($projectId);
 
         $item = $project->items()->findOrfail($itemId);

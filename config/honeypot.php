@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 use Spatie\Honeypot\SpamResponder\BlankPageResponder;
 
 return [
@@ -52,8 +54,6 @@ return [
      */
     'honeypot_fields_required_for_all_forms' => false,
 
-    /*
-     * This switch determines if the honeypot protection should be activated.
-     */
+    // This switch determines if the honeypot protection should be activated.
     'enabled' => env('HONEYPOT_ENABLED', true),
 ];

@@ -1,7 +1,8 @@
 <?php
 
-return [
+declare(strict_types = 1);
 
+return [
     /*
      * Each settings class used in your application must be registered, you can
      * put them (manually) here.
@@ -26,20 +27,18 @@ return [
      */
     'default_repository' => 'database',
 
-    /*
-     * Settings will be stored and loaded from these repositories.
-     */
+    // Settings will be stored and loaded from these repositories.
     'repositories' => [
         'database' => [
-            'type' => Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository::class,
-            'model' => null,
-            'table' => null,
+            'type'       => Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository::class,
+            'model'      => null,
+            'table'      => null,
             'connection' => null,
         ],
         'redis' => [
-            'type' => Spatie\LaravelSettings\SettingsRepositories\RedisSettingsRepository::class,
+            'type'       => Spatie\LaravelSettings\SettingsRepositories\RedisSettingsRepository::class,
             'connection' => null,
-            'prefix' => null,
+            'prefix'     => null,
         ],
     ],
 
@@ -50,9 +49,9 @@ return [
      */
     'cache' => [
         'enabled' => env('SETTINGS_CACHE_ENABLED', false),
-        'store' => null,
-        'prefix' => null,
-        'ttl' => null,
+        'store'   => null,
+        'prefix'  => null,
+        'ttl'     => null,
     ],
 
     /*
@@ -60,8 +59,8 @@ return [
      * your settings class isn't a default PHP type.
      */
     'global_casts' => [
-        DateTimeInterface::class => Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast::class,
-        DateTimeZone::class => Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast::class,
+        DateTimeInterface::class                            => Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast::class,
+        DateTimeZone::class                                 => Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast::class,
         Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
     ],
 

@@ -1,18 +1,16 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Models;
 
-use App\Traits\Sluggable;
 use App\Traits\HasOgImage;
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Board extends Model
-{
-    use HasFactory, Sluggable, HasOgImage;
-
-    const SORT_ITEMS_BY_POPULAR = 'popular';
-    const SORT_ITEMS_BY_LATEST = 'latest';
+class Board extends Model {
+    use HasFactory, HasOgImage, Sluggable;
 
     public $fillable = [
         'slug',
@@ -25,31 +23,29 @@ class Board extends Model
         'block_comments',
         'can_users_create',
     ];
-
     public $casts = [
-        'visible' => 'boolean',
+        'visible'          => 'boolean',
         'can_users_create' => 'boolean',
-        'block_comments' => 'boolean',
-        'block_votes' => 'boolean'
+        'block_comments'   => 'boolean',
+        'block_votes'      => 'boolean',
     ];
 
-    public function project()
-    {
+    public const SORT_ITEMS_BY_POPULAR = 'popular';
+    public const SORT_ITEMS_BY_LATEST = 'latest';
+
+    public function project() {
         return $this->belongsTo(Project::class);
     }
 
-    public function items()
-    {
+    public function items() {
         return $this->hasMany(Item::class);
     }
 
-    public function scopeVisible($query)
-    {
+    public function scopeVisible($query) {
         return $query->where('visible', true);
     }
 
-    public function canUsersCreateItem()
-    {
+    public function canUsersCreateItem() {
         return $this->can_users_create;
     }
 }

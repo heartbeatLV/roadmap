@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\CommentResource\Pages;
 
-use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\CommentResource;
+use Filament\Resources\Pages\EditRecord;
 
-class EditComment extends EditRecord
-{
+class EditComment extends EditRecord {
     protected static string $resource = CommentResource::class;
 }

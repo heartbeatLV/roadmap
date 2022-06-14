@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
 
-class GeneralSettings extends Settings
-{
+class GeneralSettings extends Settings {
     public bool $board_centered;
     public bool $create_default_boards;
     public bool $show_projects_sidebar_without_boards;
@@ -22,15 +23,13 @@ class GeneralSettings extends Settings
     public bool $project_required_when_creating_item;
     public bool $block_robots;
 
-    public static function group(): string
-    {
+    public static function group() : string {
         return 'general';
     }
 
-    public static function encrypted(): array
-    {
+    public static function encrypted() : array {
         return [
-            'password'
+            'password',
         ];
     }
 }

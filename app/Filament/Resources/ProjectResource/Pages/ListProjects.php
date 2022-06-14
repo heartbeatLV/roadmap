@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\ProjectResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\ProjectResource;
+use Filament\Resources\Pages\ListRecords;
 
-class ListProjects extends ListRecords
-{
+class ListProjects extends ListRecords {
     protected static string $resource = ProjectResource::class;
 }

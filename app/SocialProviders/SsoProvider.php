@@ -1,20 +1,20 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\SocialProviders;
 
-use RuntimeException;
-use GuzzleHttp\Client;
-use Illuminate\Support\Arr;
-use Laravel\Socialite\Two\User;
 use App\Exceptions\SsoException;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Arr;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
+use Laravel\Socialite\Two\User;
+use RuntimeException;
 
-class SsoProvider extends AbstractProvider implements ProviderInterface
-{
-    public function getScopes()
-    {
+class SsoProvider extends AbstractProvider implements ProviderInterface {
+    public function getScopes() {
         if (config('services.sso.scopes') !== null) {
             return explode(',', config('services.sso.scopes'));
         }
@@ -22,9 +22,8 @@ class SsoProvider extends AbstractProvider implements ProviderInterface
         return ['email'];
     }
 
-    protected function getHttpClient()
-    {
-        if (is_null($this->httpClient)) {
+    protected function getHttpClient() {
+        if ($this->httpClient === null) {
             $this->httpClient = new Client(array_merge($this->guzzle, [
                 'verify' => config('services.sso.http_verify', true),
             ]));
@@ -33,20 +32,17 @@ class SsoProvider extends AbstractProvider implements ProviderInterface
         return $this->httpClient;
     }
 
-    protected function getAuthUrl($state)
-    {
+    protected function getAuthUrl($state) {
         $endpoint = config('services.sso.endpoints.authorize') ?? config('services.sso.url') . '/oauth/authorize';
 
         return $this->buildAuthUrlFromBase($endpoint, $state);
     }
 
-    protected function getTokenUrl()
-    {
+    protected function getTokenUrl() {
         return config('services.sso.endpoints.token') ?? config('services.sso.url') . '/oauth/token';
     }
 
-    protected function getTokenFields($code)
-    {
+    protected function getTokenFields($code) {
         return Arr::add(
             parent::getTokenFields($code),
             'grant_type',
@@ -54,14 +50,13 @@ class SsoProvider extends AbstractProvider implements ProviderInterface
         );
     }
 
-    protected function getUserByToken($token)
-    {
+    protected function getUserByToken($token) {
         $endpoint = config('services.sso.endpoints.user') ?? config('services.sso.url') . '/api/oauth/user';
 
         try {
             $response = $this->getHttpClient()->get($endpoint, [
                 'headers' => [
-                    'Accept' => 'application/json',
+                    'Accept'        => 'application/json',
                     'Authorization' => 'Bearer ' . $token,
                 ],
             ]);
@@ -74,32 +69,29 @@ class SsoProvider extends AbstractProvider implements ProviderInterface
         return json_decode($response->getBody(), true);
     }
 
-    protected function mapUserToObject(array $user)
-    {
+    protected function mapUserToObject(array $user) {
         $user = Arr::get($user, 'data');
 
         if ($user === null || !Arr::has($user, ['id', 'email', 'name'])) {
             throw new RuntimeException('The SSO user endpoint should return an `id`, `email` and `name` in the `data` field of the JSON response.');
         }
 
-        return (new User)->setRaw($user)->map([
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
+        return (new User())->setRaw($user)->map([
+            'id'       => $user['id'],
+            'email'    => $user['email'],
+            'name'     => $user['name'],
             'nickname' => $user['name'],
         ]);
     }
 
-    public static function isEnabled(): bool
-    {
+    public static function isEnabled() : bool {
         return config('services.sso.url') &&
             config('services.sso.client_id') &&
             config('services.sso.client_secret') &&
             config('services.sso.redirect');
     }
 
-    public static function isForced(): bool
-    {
+    public static function isForced() : bool {
         return self::isEnabled() && config('services.sso.forced') === true;
     }
 }

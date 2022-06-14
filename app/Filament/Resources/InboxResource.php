@@ -1,39 +1,29 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\Item;
-use Filament\Tables;
-use App\Models\Project;
-use Filament\Resources\Form;
-use Filament\Resources\Table;
-use Filament\Resources\Resource;
 use App\Filament\Resources\InboxResource\Pages;
-use App\Filament\Resources\InboxResource\RelationManagers\VotesRelationManager;
 use App\Filament\Resources\InboxResource\RelationManagers\CommentsRelationManager;
+use App\Filament\Resources\InboxResource\RelationManagers\VotesRelationManager;
+use App\Models\Item;
+use App\Models\Project;
+use Filament\Forms;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
 
-class InboxResource extends Resource
-{
+class InboxResource extends Resource {
     protected static ?string $model = Item::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-inbox';
-
     protected static ?string $navigationGroup = 'Manage';
-
     protected static ?string $label = 'Inbox';
-
     protected static ?string $pluralLabel = 'Inbox';
-
     protected static ?string $slug = 'inbox';
 
-    protected static function getNavigationBadge(): ?string
-    {
-        return Item::query()->hasNoProjectAndBoard()->count();
-    }
-
-    public static function form(Form $form): Form
-    {
+    public static function form(Form $form) : Form {
         return $form
             ->schema([
                 Forms\Components\Card::make([
@@ -60,25 +50,24 @@ class InboxResource extends Resource
                         ->reactive(),
                     Forms\Components\Select::make('board_id')
                         ->label('Board')
-                        ->options(fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? []),
+                        ->options(static fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? []),
                     Forms\Components\Toggle::make('pinned')
                         ->label('Pinned')
                         ->default(false),
                     Forms\Components\Placeholder::make('created_at')
                         ->label('Created at')
-                        ->visible(fn ($record) => filled($record))
-                        ->content(fn ($record) => $record->created_at->format('d-m-Y H:i:s')),
+                        ->visible(static fn ($record) => filled($record))
+                        ->content(static fn ($record) => $record->created_at->format('d-m-Y H:i:s')),
                     Forms\Components\Placeholder::make('updated_at')
                         ->label('Updated at')
-                        ->visible(fn ($record) => filled($record))
-                        ->content(fn ($record) => $record->updated_at->format('d-m-Y H:i:s')),
+                        ->visible(static fn ($record) => filled($record))
+                        ->content(static fn ($record) => $record->updated_at->format('d-m-Y H:i:s')),
                 ])->columnSpan(1),
             ])
             ->columns(4);
     }
 
-    public static function table(Table $table): Table
-    {
+    public static function table(Table $table) : Table {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->searchable(),
@@ -94,20 +83,22 @@ class InboxResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
-    public static function getRelations(): array
-    {
+    public static function getRelations() : array {
         return [
             CommentsRelationManager::class,
             VotesRelationManager::class,
         ];
     }
 
-    public static function getPages(): array
-    {
+    public static function getPages() : array {
         return [
-            'index' => Pages\ListInboxes::route('/'),
+            'index'  => Pages\ListInboxes::route('/'),
             'create' => Pages\CreateInbox::route('/create'),
-            'edit' => Pages\EditInbox::route('/{record}/edit'),
+            'edit'   => Pages\EditInbox::route('/{record}/edit'),
         ];
+    }
+
+    protected static function getNavigationBadge() : ?string {
+        return Item::query()->hasNoProjectAndBoard()->count();
     }
 }

@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 return [
     'view-item' => [
-        'name' => 'View item',
+        'name'        => 'View item',
         'description' => 'View a item',
     ],
     'profile' => [
-        'name' => 'Profile',
+        'name'        => 'Profile',
         'description' => 'View your profile',
     ],
     'logout' => [
-        'name' => 'Logout',
+        'name'        => 'Logout',
         'description' => 'Logout out of your account',
     ],
 ];

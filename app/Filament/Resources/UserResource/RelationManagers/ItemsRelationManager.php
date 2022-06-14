@@ -1,45 +1,40 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use Closure;
-use Filament\Tables;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\RelationManagers\HasManyRelationManager;
+use Filament\Resources\Table;
+use Filament\Tables;
+use Illuminate\Database\Eloquent\Model;
 
-class ItemsRelationManager extends HasManyRelationManager
-{
+class ItemsRelationManager extends HasManyRelationManager {
     protected static string $relationship = 'items';
-
     protected static ?string $recordTitleAttribute = 'title';
 
-    public function canCreate(): bool
-    {
+    public function canCreate() : bool {
         return false;
     }
 
-    protected function canEdit(Model $record): bool
-    {
+    protected function canEdit(Model $record) : bool {
         return false;
     }
 
-    protected function getTableRecordUrlUsing(): Closure
-    {
-        return fn (Model $record): string => route('filament.resources.items.edit', ['record' => $record]);
+    protected function getTableRecordUrlUsing() : Closure {
+        return static fn (Model $record) : string => route('filament.resources.items.edit', ['record' => $record]);
     }
 
-    public static function form(Form $form): Form
-    {
+    public static function form(Form $form) : Form {
         return $form
             ->schema([
                 //
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
+    public static function table(Table $table) : Table {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id'),

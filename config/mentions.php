@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 return [
     'pools' => [
         'users' => [
@@ -14,6 +16,6 @@ return [
 
             // Notification class to use when this model is mentioned.
             'notification' => App\Notifications\MentionNotification::class,
-        ]
-    ]
+        ],
+    ],
 ];

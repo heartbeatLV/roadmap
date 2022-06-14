@@ -1,31 +1,29 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Board;
-use Ramsey\Uuid\Uuid;
-use App\Models\Project;
-use Filament\Resources\Form;
-use Filament\Resources\Table;
-use Filament\Resources\Resource;
-use App\Settings\GeneralSettings;
 use App\Filament\Resources\ProjectResource\Pages;
+use App\Models\Board;
+use App\Models\Project;
+use App\Settings\GeneralSettings;
+use Filament\Forms;
+use Filament\Resources\Form;
+use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
+use Ramsey\Uuid\Uuid;
 
-class ProjectResource extends Resource
-{
+class ProjectResource extends Resource {
     protected static ?string $model = Project::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-list';
-
     protected static ?string $navigationGroup = 'Manage';
 
-    public static function form(Form $form): Form
-    {
-        $boards = collect(app(GeneralSettings::class)->default_boards)->mapWithKeys(function ($board) {
+    public static function form(Form $form) : Form {
+        $boards = collect(app(GeneralSettings::class)->default_boards)->mapWithKeys(static function ($board) {
             return [Uuid::uuid4()->toString() => [
-                'title' => $board,
+                'title'       => $board,
                 'description' => null,
             ]];
         })->toArray();
@@ -64,7 +62,7 @@ class ProjectResource extends Resource
                                 Forms\Components\Select::make('sort_items_by')
                                     ->options([
                                         Board::SORT_ITEMS_BY_POPULAR => 'Popular',
-                                        Board::SORT_ITEMS_BY_LATEST => 'Latest',
+                                        Board::SORT_ITEMS_BY_LATEST  => 'Latest',
                                     ])
                                     ->default(Board::SORT_ITEMS_BY_POPULAR)
                                     ->required(),
@@ -72,12 +70,11 @@ class ProjectResource extends Resource
 
                             Forms\Components\Textarea::make('description')->helperText('Used as META description for SEO purposes.'),
                         ]),
-                ])->columns()
+                ])->columns(),
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
+    public static function table(Table $table) : Table {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id'),
@@ -94,19 +91,17 @@ class ProjectResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
-    public static function getRelations(): array
-    {
+    public static function getRelations() : array {
         return [
             //
         ];
     }
 
-    public static function getPages(): array
-    {
+    public static function getPages() : array {
         return [
-            'index' => Pages\ListProjects::route('/'),
+            'index'  => Pages\ListProjects::route('/'),
             'create' => Pages\CreateProject::route('/create'),
-            'edit' => Pages\EditProject::route('/{record}/edit'),
+            'edit'   => Pages\EditProject::route('/{record}/edit'),
         ];
     }
 }

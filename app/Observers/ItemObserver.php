@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Observers;
 
-use Mail;
+use App\Mail\Admin\ItemHasBeenCreatedEmail;
 use App\Models\Item;
 use App\Models\User;
-use App\Settings\GeneralSettings;
-use App\Mail\Admin\ItemHasBeenCreatedEmail;
 use App\Notifications\Item\ItemUpdatedNotification;
+use App\Settings\GeneralSettings;
+use Mail;
 
-class ItemObserver
-{
-    public function created(Item $item)
-    {
+class ItemObserver {
+    public function created(Item $item) : void {
         activity()
             ->performedOn($item)
             ->log('opened');
@@ -24,8 +24,7 @@ class ItemObserver
         }
     }
 
-    public function updating(Item $item)
-    {
+    public function updating(Item $item) : void {
         $isDirty = false;
 
         if ($item->isDirty('board_id')) {
@@ -52,7 +51,7 @@ class ItemObserver
             $isDirty = true;
         }
 
-        if ($item->isDirty('pinned') && ! $item->pinned) {
+        if ($item->isDirty('pinned') && !$item->pinned) {
             activity()
                 ->performedOn($item)
                 ->log('un-pinned');
@@ -63,14 +62,13 @@ class ItemObserver
         if ($isDirty) {
             $users = $item->subscribedVotes()->with('user')->get()->pluck('user');
 
-            $users->each(function (User $user) use ($item) {
+            $users->each(static function (User $user) use ($item) : void {
                 $user->notify(new ItemUpdatedNotification($item));
             });
         }
     }
 
-    public function deleting(Item $item)
-    {
+    public function deleting(Item $item) : void {
         $item->votes()->delete();
         $item->comments()->delete();
     }

@@ -1,40 +1,42 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Livewire;
 
 use Closure;
 use Filament\Tables;
-use Livewire\Component;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Concerns\InteractsWithTable;
+use Livewire\Component;
 
-class My extends Component implements HasTable
-{
+class My extends Component implements HasTable {
     use InteractsWithTable;
 
     public $type = 'default';
 
-    protected function getTableQuery(): Builder
-    {
-        if ($this->type == 'default') {
+    public function render() {
+        return view('livewire.my');
+    }
+
+    protected function getTableQuery() : Builder {
+        if ($this->type === 'default') {
             return auth()->user()->items()->with('board.project')->latest()->getQuery();
         }
 
-        if ($this->type == 'commentedOn') {
+        if ($this->type === 'commentedOn') {
             return auth()->user()->commentedItems()->getQuery();
         }
 
         return auth()->user()->votedItems()->with('board.project')->latest('votes.created_at')->getQuery();
     }
 
-    protected function getTableRecordsPerPageSelectOptions(): array
-    {
+    protected function getTableRecordsPerPageSelectOptions() : array {
         return [5];
     }
 
-    protected function getTableColumns(): array
-    {
+    protected function getTableColumns() : array {
         return [
             Tables\Columns\TextColumn::make('title')->label(trans('table.title'))->searchable(),
             Tables\Columns\TextColumn::make('total_votes')->label(trans('table.total-votes'))->sortable(),
@@ -50,9 +52,8 @@ class My extends Component implements HasTable
         ];
     }
 
-    protected function getTableRecordUrlUsing(): ?Closure
-    {
-        return function ($record) {
+    protected function getTableRecordUrlUsing() : ?Closure {
+        return static function ($record) {
             if (!$record->board) {
                 return route('items.show', $record);
             }
@@ -63,10 +64,5 @@ class My extends Component implements HasTable
 
             return route('projects.items.show', [$record->project, $record]);
         };
-    }
-
-    public function render()
-    {
-        return view('livewire.my');
     }
 }

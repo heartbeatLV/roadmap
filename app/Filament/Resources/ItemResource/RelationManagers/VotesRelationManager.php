@@ -1,28 +1,26 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\ItemResource\RelationManagers;
 
-use Filament\Tables;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
 use Filament\Resources\RelationManagers\HasManyRelationManager;
+use Filament\Resources\Table;
+use Filament\Tables;
 
-class VotesRelationManager extends HasManyRelationManager
-{
+class VotesRelationManager extends HasManyRelationManager {
     protected static string $relationship = 'votes';
-
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Form $form): Form
-    {
+    public static function form(Form $form) : Form {
         return $form
             ->schema([
                 //
             ]);
     }
 
-    public static function table(Table $table): Table
-    {
+    public static function table(Table $table) : Table {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name'),

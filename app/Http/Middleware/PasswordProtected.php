@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Middleware;
 
+use App\Settings\GeneralSettings;
 use Closure;
 use Illuminate\Http\Request;
-use App\Settings\GeneralSettings;
 
-class PasswordProtected
-{
-    public function handle(Request $request, Closure $next)
-    {
+class PasswordProtected {
+    public function handle(Request $request, Closure $next) {
         if (
             app(GeneralSettings::class)->password &&
             !session('password-login-authorized') &&

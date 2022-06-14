@@ -1,23 +1,22 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Notifications;
 
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
-class CommentHasReplyNotification extends Notification implements ShouldQueue
-{
+class CommentHasReplyNotification extends Notification implements ShouldQueue {
     use Queueable;
 
-    public function __construct(public Comment $comment)
-    {
+    public function __construct(public Comment $comment) {
     }
 
-    public function via($notifiable)
-    {
+    public function via($notifiable) {
         if (!$notifiable->wantsNotification('receive_comment_reply_notifications')) {
             return [];
         }
@@ -25,9 +24,8 @@ class CommentHasReplyNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
+    public function toMail($notifiable) {
+        return (new MailMessage())
             ->subject('New reply on your comment on roadmap item ' . $this->comment->item->title)
             ->line('There is a new reply on a comment you posted.')
             ->action('View comment', route('items.show', $this->comment->item) . '#comment-' . $this->comment->id)

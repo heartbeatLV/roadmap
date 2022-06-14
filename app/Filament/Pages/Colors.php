@@ -1,24 +1,22 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Pages;
 
 use App\Settings\ColorSettings;
-use Filament\Pages\SettingsPage;
 use Filament\Forms\Components\Card;
-use Livewire\TemporaryUploadedFile;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Pages\SettingsPage;
+use Livewire\TemporaryUploadedFile;
 
-class Colors extends SettingsPage
-{
+class Colors extends SettingsPage {
     protected static ?string $navigationIcon = 'heroicon-o-color-swatch';
-
     protected static string $settings = ColorSettings::class;
-
     protected static ?string $navigationLabel = 'Theme';
 
-    protected function getFormSchema(): array
-    {
+    protected function getFormSchema() : array {
         return [
             Card::make([
                 ColorPicker::make('primary'),
@@ -29,12 +27,8 @@ class Colors extends SettingsPage
                     ->imageResizeTargetHeight('64')
                     ->imageResizeTargetWidth('64')
                     ->maxSize(1024)
-                    ->getUploadedFileUrlUsing(function ($record) {
-                        return storage_path('app/public/favicon.png');
-                    })
-                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                        return (string)'favicon.png';
-                    }),
+                    ->getUploadedFileUrlUsing(static fn ($record)                                         => storage_path('app/public/favicon.png'))
+                    ->getUploadedFileNameForStorageUsing(static fn (TemporaryUploadedFile $file) : string => (string)'favicon.png'),
             ])->columns(),
         ];
     }

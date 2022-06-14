@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\InboxResource\Pages;
 
 use App\Filament\Resources\InboxResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateInbox extends CreateRecord
-{
+class CreateInbox extends CreateRecord {
     protected static string $resource = InboxResource::class;
 }

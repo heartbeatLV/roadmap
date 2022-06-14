@@ -1,17 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MyController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\BoardsController;
-use App\Http\Controllers\ProjectController;
+declare(strict_types = 1);
+
 use App\Http\Controllers\Auth\PasswordProtectionController;
+use App\Http\Controllers\BoardsController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\MyController;
+use App\Http\Controllers\ProjectController;
+use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
 Route::get('oauth/login', [\App\Http\Controllers\Auth\LoginController::class, 'redirectToProvider'])
-     ->middleware('guest')
-     ->name('oauth.login');
+    ->middleware('guest')
+    ->name('oauth.login');
 Route::get('oauth/callback', [\App\Http\Controllers\Auth\LoginController::class, 'handleProviderCallback'])->middleware('guest');
 
 Route::get('password-protection', PasswordProtectionController::class)->name('password.protection');
@@ -25,7 +27,7 @@ Route::get('projects/{project}/items/{item}', [ItemController::class, 'show'])->
 Route::post('projects/{project}/items/{item}/vote', [ItemController::class, 'vote'])->middleware('auth')->name('projects.items.vote');
 Route::get('projects/{project}/boards/{board}', [BoardsController::class, 'show'])->name('projects.boards.show');
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth'], static function () : void {
     Route::get('profile', [\App\Http\Controllers\Auth\ProfileController::class, 'show'])->name('profile');
     Route::get('my', MyController::class)->name('my');
 

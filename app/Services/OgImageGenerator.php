@@ -1,73 +1,61 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Services;
 
-use Illuminate\Support\Str;
 use App\Settings\ColorSettings;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use const PHP_EOL;
 
-class OgImageGenerator
-{
+class OgImageGenerator {
+    private string  $title;
+    private ?string $subject = null;
+    private ?string $description = null;
+    private ?string $filename = null;
+    private ?string $templateFile = null;
+    private bool   $polygonEnabled = false;
+    private ?array $polygonPoints = null;
+
     private const DEFAULT_POLYGON_POINTS = [1200, 200, 1200, 630, 825, 630];
 
-    private string  $title;
-    private ?string $subject     = null;
-    private ?string $description = null;
-
-    private ?string $filename     = null;
-    private ?string $templateFile = null;
-
-    private bool   $polygonEnabled = false;
-    private ?array $polygonPoints  = null;
-
-    public static function make(string $title): self
-    {
-        return new self($title);
-    }
-
-    private function __construct(string $title)
-    {
+    private function __construct(string $title) {
         $this->title = $title;
     }
 
-    public function withSubject(string|null $subject): self
-    {
+    public function withSubject(string|null $subject) : self {
         $this->subject = $subject;
 
         return $this;
     }
 
-    public function withDescription(string|null $description): self
-    {
+    public function withDescription(string|null $description) : self {
         $this->description = $description;
 
         return $this;
     }
 
-    public function withTemplateFile(string $templateFile): self
-    {
+    public function withTemplateFile(string $templateFile) : self {
         $this->templateFile = $templateFile;
 
         return $this;
     }
 
-    public function withFilename(?string $filename): self
-    {
+    public function withFilename(?string $filename) : self {
         $this->filename = $filename;
 
         return $this;
     }
 
-    public function withPolygonDecoration(?array $points = null): static
-    {
+    public function withPolygonDecoration(array $points = null) : static {
         $this->polygonEnabled = true;
-        $this->polygonPoints  = $points;
+        $this->polygonPoints = $points;
 
         return $this;
     }
 
-    public function getFilename(): string
-    {
+    public function getFilename() : string {
         if (
             $this->filename &&
             $this->filename !== 'og.jpg' &&
@@ -79,8 +67,7 @@ class OgImageGenerator
         return $this->filename ?? 'og-' . md5(time()) . '.jpg';
     }
 
-    public function generate(): OgImage
-    {
+    public function generate() : OgImage {
         $generated = new OgImage($this->getFilename());
 
         if ($generated->exists()) {
@@ -102,21 +89,21 @@ class OgImageGenerator
         $brandingColors = $this->getBrandingColors();
 
         if ($this->subject) {
-            $image->text(wordwrap($this->subject, 22, PHP_EOL), 78, $y - 65, static function ($font) use ($brandingColors) {
+            $image->text(wordwrap($this->subject, 22, PHP_EOL), 78, $y - 65, static function ($font) use ($brandingColors) : void {
                 $font->file(public_path('fonts/Lexend-Bold.ttf'));
                 $font->size(25);
                 $font->color($brandingColors->shades['brand-500']);
             });
         }
 
-        $image->text(Str::limit($this->title, 28), 75, $y, static function ($font) {
+        $image->text(Str::limit($this->title, 28), 75, $y, static function ($font) : void {
             $font->file(public_path('fonts/Lexend-Bold.ttf'));
             $font->size(60);
             $font->color('#000');
         });
 
         if ($this->description) {
-            $image->text(wordwrap($this->description, 35, PHP_EOL), 75, $y + 60, static function ($font) {
+            $image->text(wordwrap($this->description, 35, PHP_EOL), 75, $y + 60, static function ($font) : void {
                 $font->file(public_path('fonts/Lexend-SemiBold.ttf'));
                 $font->size(30);
                 $font->color('#000');
@@ -126,7 +113,7 @@ class OgImageGenerator
         if ($this->polygonEnabled) {
             $image->polygon(
                 $this->polygonPoints ?? self::DEFAULT_POLYGON_POINTS,
-                static function ($draw) use ($brandingColors) {
+                static function ($draw) use ($brandingColors) : void {
                     $draw->background($brandingColors->shades['brand-100']);
                 }
             );
@@ -137,8 +124,11 @@ class OgImageGenerator
         return $generated;
     }
 
-    protected function getBrandingColors(): Tailwind
-    {
+    protected function getBrandingColors() : Tailwind {
         return new Tailwind('brand', app(ColorSettings::class)->primary);
+    }
+
+    public static function make(string $title) : self {
+        return new self($title);
     }
 }

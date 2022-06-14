@@ -1,23 +1,22 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Widgets;
 
-use Closure;
-use App\Models\Item;
-use Filament\Tables;
 use App\Filament\Resources\ItemResource;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Item;
+use Closure;
+use Filament\Tables;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Builder;
 
-class LatestItems extends BaseWidget
-{
-    protected function getTableQuery(): Builder
-    {
+class LatestItems extends BaseWidget {
+    protected function getTableQuery() : Builder {
         return Item::query()->latest()->limit(5);
     }
 
-    protected function getTableColumns(): array
-    {
+    protected function getTableColumns() : array {
         return [
             Tables\Columns\TextColumn::make('title'),
             Tables\Columns\TextColumn::make('total_votes'),
@@ -27,13 +26,11 @@ class LatestItems extends BaseWidget
         ];
     }
 
-    protected function getTableRecordUrlUsing(): ?Closure
-    {
-        return fn ($record) => ItemResource::getUrl('edit', $record);
+    protected function getTableRecordUrlUsing() : ?Closure {
+        return static fn ($record) => ItemResource::getUrl('edit', $record);
     }
 
-    protected function isTablePaginationEnabled(): bool
-    {
+    protected function isTablePaginationEnabled() : bool {
         return false;
     }
 }

@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 return [
     'view-item' => [
-        'name' => 'Afficher article',
+        'name'        => 'Afficher article',
         'description' => 'Afficher un article',
     ],
     'profile' => [
-        'name' => 'Profil',
+        'name'        => 'Profil',
         'description' => 'Afficher votre profil',
     ],
     'logout' => [
-        'name' => 'Se déconnecter',
+        'name'        => 'Se déconnecter',
         'description' => 'Déconnectez-vous de votre compte',
     ],
 ];

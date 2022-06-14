@@ -1,33 +1,30 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources;
 
-use Filament\Forms;
+use App\Filament\Resources\ItemResource\Pages;
+use App\Filament\Resources\ItemResource\RelationManagers\ActivitiesRelationManager;
+use App\Filament\Resources\ItemResource\RelationManagers\CommentsRelationManager;
+use App\Filament\Resources\ItemResource\RelationManagers\VotesRelationManager;
 use App\Models\Item;
-use Filament\Tables;
 use App\Models\Project;
+use Filament\Forms;
 use Filament\Resources\Form;
-use Filament\Resources\Table;
 use Filament\Resources\Resource;
+use Filament\Resources\Table;
+use Filament\Tables;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\ItemResource\Pages;
-use App\Filament\Resources\ItemResource\RelationManagers\VotesRelationManager;
-use App\Filament\Resources\ItemResource\RelationManagers\CommentsRelationManager;
-use App\Filament\Resources\ItemResource\RelationManagers\ActivitiesRelationManager;
 
-class ItemResource extends Resource
-{
+class ItemResource extends Resource {
     protected static ?string $model = Item::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-archive';
-
     protected static ?string $navigationGroup = 'Manage';
-
     protected static ?string $recordTitleAttribute = 'title';
 
-    public static function form(Form $form): Form
-    {
+    public static function form(Form $form) : Form {
         return $form
             ->schema([
                 Forms\Components\Card::make([
@@ -55,26 +52,25 @@ class ItemResource extends Resource
                         ->required(),
                     Forms\Components\Select::make('board_id')
                         ->label('Board')
-                        ->options(fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? [])
+                        ->options(static fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? [])
                         ->required(),
                     Forms\Components\Toggle::make('pinned')
                         ->label('Pinned')
                         ->default(false),
                     Forms\Components\Placeholder::make('created_at')
                         ->label('Created at')
-                        ->visible(fn ($record) => filled($record))
-                        ->content(fn ($record) => $record->created_at->format('d-m-Y H:i:s')),
+                        ->visible(static fn ($record) => filled($record))
+                        ->content(static fn ($record) => $record->created_at->format('d-m-Y H:i:s')),
                     Forms\Components\Placeholder::make('updated_at')
                         ->label('Updated at')
-                        ->visible(fn ($record) => filled($record))
-                        ->content(fn ($record) => $record->updated_at->format('d-m-Y H:i:s')),
+                        ->visible(static fn ($record) => filled($record))
+                        ->content(static fn ($record) => $record->updated_at->format('d-m-Y H:i:s')),
                 ])->columnSpan(1),
             ])
             ->columns(4);
     }
 
-    public static function table(Table $table): Table
-    {
+    public static function table(Table $table) : Table {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id'),
@@ -99,32 +95,30 @@ class ItemResource extends Resource
                             ->options(Project::pluck('title', 'id')),
                         Forms\Components\Select::make('board_id')
                             ->label(trans('table.board'))
-                            ->options(fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? []),
+                            ->options(static fn ($get) => Project::find($get('project_id'))?->boards()->pluck('title', 'id') ?? []),
                         Forms\Components\Toggle::make('pinned')
                             ->label('Pinned'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
+                    ->query(static function (Builder $query, array $data) : Builder {
                         return $query
                             ->when(
                                 $data['project_id'],
-                                fn (Builder $query, $projectId): Builder => $query->where('project_id', $projectId),
+                                static fn (Builder $query, $projectId) : Builder => $query->where('project_id', $projectId),
                             )
                             ->when(
                                 $data['board_id'],
-                                fn (Builder $query, $boardId): Builder => $query->where('board_id', $boardId),
+                                static fn (Builder $query, $boardId) : Builder => $query->where('board_id', $boardId),
                             )
                             ->when(
                                 $data['pinned'],
-                                fn (Builder $query): Builder => $query->where('pinned', $data['pinned']),
+                                static fn (Builder $query) : Builder => $query->where('pinned', $data['pinned']),
                             );
-                    })
-
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
 
-    public static function getRelations(): array
-    {
+    public static function getRelations() : array {
         return [
             ActivitiesRelationManager::class,
             CommentsRelationManager::class,
@@ -132,12 +126,11 @@ class ItemResource extends Resource
         ];
     }
 
-    public static function getPages(): array
-    {
+    public static function getPages() : array {
         return [
-            'index' => Pages\ListItems::route('/'),
+            'index'  => Pages\ListItems::route('/'),
             'create' => Pages\CreateItem::route('/create'),
-            'edit' => Pages\EditItem::route('/{record}/edit'),
+            'edit'   => Pages\EditItem::route('/{record}/edit'),
         ];
     }
 }

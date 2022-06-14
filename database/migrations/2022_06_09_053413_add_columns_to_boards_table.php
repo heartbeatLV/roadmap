@@ -1,19 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+declare(strict_types = 1);
 
-return new class extends Migration {
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class() extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
-        Schema::table('boards', function (Blueprint $table) {
-            $table->after('can_users_create', function ($table) {
+    public function up() : void {
+        Schema::table('boards', static function (Blueprint $table) : void {
+            $table->after('can_users_create', static function ($table) : void {
                 $table->boolean('block_comments')->default(false);
                 $table->boolean('block_votes')->default(false);
             });
@@ -22,12 +21,9 @@ return new class extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
-        Schema::table('boards', function (Blueprint $table) {
+    public function down() : void {
+        Schema::table('boards', static function (Blueprint $table) : void {
             //
         });
     }

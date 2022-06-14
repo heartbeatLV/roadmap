@@ -1,29 +1,27 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Notifications\Item;
 
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
-class ItemHasNewCommentNotification extends Notification implements ShouldQueue
-{
+class ItemHasNewCommentNotification extends Notification implements ShouldQueue {
     use Queueable;
 
-    public function __construct(public Comment $comment)
-    {
+    public function __construct(public Comment $comment) {
     }
 
-    public function via($notifiable)
-    {
+    public function via($notifiable) {
         return ['mail'];
     }
 
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
+    public function toMail($notifiable) {
+        return (new MailMessage())
             ->subject('New comment on roadmap item ' . $this->comment->item->title)
             ->line('There is a new comment on a item you\'re subscribed too.')
             ->action('View comment', route('items.show', $this->comment->item) . '#comment-' . $this->comment->id)

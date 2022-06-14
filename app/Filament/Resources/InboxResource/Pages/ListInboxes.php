@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\InboxResource\Pages;
 
-use App\Models\Item;
 use App\Filament\Resources\InboxResource;
+use App\Models\Item;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
-class ListInboxes extends ListRecords
-{
+class ListInboxes extends ListRecords {
     protected static string $resource = InboxResource::class;
 
-    protected function getTableQuery(): Builder
-    {
+    protected function getTableQuery() : Builder {
         return Item::query()->hasNoProjectAndBoard();
     }
 }

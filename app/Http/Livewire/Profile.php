@@ -1,43 +1,83 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Livewire;
 
-use Filament\Forms;
 use App\Models\User;
-use Filament\Tables;
-use Livewire\Component;
 use App\SocialProviders\SsoProvider;
-use Illuminate\Support\Facades\Http;
+use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Http\Livewire\Concerns\CanNotify;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Filament\Http\Livewire\Concerns\CanNotify;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Tables\Concerns\InteractsWithTable;
+use Illuminate\Support\Facades\Http;
+use Livewire\Component;
 
-class Profile extends Component implements HasForms, HasTable
-{
-    use InteractsWithForms, InteractsWithTable, CanNotify;
+class Profile extends Component implements HasForms, HasTable {
+    use CanNotify, InteractsWithForms, InteractsWithTable;
 
     public $name;
     public $email;
     public User $user;
 
-    public function mount(): void
-    {
+    public function mount() : void {
         $this->user = auth()->user();
 
         $this->form->fill([
-            'name' => $this->user->name,
-            'username' => $this->user->username,
-            'email' => $this->user->email,
+            'name'                  => $this->user->name,
+            'username'              => $this->user->username,
+            'email'                 => $this->user->email,
             'notification_settings' => $this->user->notification_settings,
         ]);
     }
 
-    protected function getFormSchema(): array
-    {
+    public function submit() : void {
+        $data = $this->form->getState();
+
+        $this->user->update([
+            'name'                  => $data['name'],
+            'email'                 => $data['email'],
+            'username'              => $data['username'],
+            'notification_settings' => $data['notification_settings'],
+        ]);
+
+        $this->notify('success', 'Profile has been saved.');
+    }
+
+    public function logout() {
+        auth()->logout();
+
+        return redirect()->route('home');
+    }
+
+    public function deleteConfirm() : void {
+        $this->dispatchBrowserEvent('open-modal', ['id' => 'deleteAccount']);
+    }
+
+    public function closeDeleteConfirm() : void {
+        $this->dispatchBrowserEvent('close-modal', ['id' => 'deleteAccount']);
+    }
+
+    public function delete() {
+        auth()->user()->delete();
+
+        auth()->logout();
+
+        return redirect()->route('home');
+    }
+
+    public function render() {
+        return view('livewire.profile', [
+            'hasSsoLoginAvailable' => SsoProvider::isEnabled(),
+        ]);
+    }
+
+    protected function getFormSchema() : array {
         return [
             Forms\Components\Section::make(trans('auth.profile'))->schema([
                 Forms\Components\TextInput::make('name')->label(trans('auth.name'))->required(),
@@ -46,7 +86,7 @@ class Profile extends Component implements HasForms, HasTable
                     ->helperText(trans('profile.username_description'))
                     ->required()
                     ->rules([
-                        'alpha_dash'
+                        'alpha_dash',
                     ])
                     ->unique(table: User::class, column: 'username', ignorable: auth()->user()),
                 Forms\Components\TextInput::make('email')->label(trans('auth.email'))->required()->email(),
@@ -56,67 +96,18 @@ class Profile extends Component implements HasForms, HasTable
                 ->schema([
                     Forms\Components\CheckboxList::make('notification_settings')->label(trans('profile.notification_settings'))
                         ->options([
-                            'receive_mention_notifications' => trans('profile.receive_mention_notifications'),
+                            'receive_mention_notifications'       => trans('profile.receive_mention_notifications'),
                             'receive_comment_reply_notifications' => trans('profile.receive_comment_reply_notifications'),
                         ]),
                 ])->collapsible(),
         ];
     }
 
-    public function submit(): void
-    {
-        $data = $this->form->getState();
-
-        $this->user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'username' => $data['username'],
-            'notification_settings' => $data['notification_settings'],
-        ]);
-
-        $this->notify('success', 'Profile has been saved.');
-    }
-
-    public function logout()
-    {
-        auth()->logout();
-
-        return redirect()->route('home');
-    }
-
-    public function deleteConfirm()
-    {
-        $this->dispatchBrowserEvent('open-modal', ['id' => 'deleteAccount']);
-    }
-
-    public function closeDeleteConfirm()
-    {
-        $this->dispatchBrowserEvent('close-modal', ['id' => 'deleteAccount']);
-    }
-
-    public function delete()
-    {
-        auth()->user()->delete();
-
-        auth()->logout();
-
-        return redirect()->route('home');
-    }
-
-    public function render()
-    {
-        return view('livewire.profile', [
-            'hasSsoLoginAvailable' => SsoProvider::isEnabled(),
-        ]);
-    }
-
-    protected function getTableQuery(): Builder
-    {
+    protected function getTableQuery() : Builder {
         return auth()->user()->userSocials()->latest()->getQuery();
     }
 
-    protected function getTableColumns(): array
-    {
+    protected function getTableColumns() : array {
         return [
             Tables\Columns\TextColumn::make('name'),
             Tables\Columns\TextColumn::make('provider'),
@@ -124,11 +115,10 @@ class Profile extends Component implements HasForms, HasTable
         ];
     }
 
-    protected function getTableBulkActions(): array
-    {
+    protected function getTableBulkActions() : array {
         return [
             Tables\Actions\BulkAction::make('delete')
-                ->action(function (Collection $records) {
+                ->action(static function (Collection $records) : void {
                     foreach ($records as $record) {
                         $endpoint = config('services.sso.endpoints.revoke') ?? config('services.sso.url') . '/api/oauth/revoke';
 
@@ -147,7 +137,6 @@ class Profile extends Component implements HasForms, HasTable
                 ->requiresConfirmation()
                 ->color('danger')
                 ->icon('heroicon-o-trash'),
-
         ];
     }
 }

@@ -1,44 +1,42 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Livewire\Welcome;
 
-use Closure;
 use App\Models\Item;
-use Filament\Tables;
-use Livewire\Component;
-use Illuminate\Support\Arr;
 use App\Settings\GeneralSettings;
+use Closure;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Concerns\InteractsWithTable;
+use Illuminate\Support\Arr;
+use Livewire\Component;
 
-class RecentItems extends Component implements HasTable
-{
+class RecentItems extends Component implements HasTable {
     use InteractsWithTable;
 
-    protected function getTableQuery(): Builder
-    {
+    public function render() {
+        return view('livewire.welcome.recent-items');
+    }
+
+    protected function getTableQuery() : Builder {
         $recentItemsConfig = collect(app(GeneralSettings::class)->dashboard_items)->first();
 
         return Item::query()
             ->with('board.project')
-            ->when(Arr::get($recentItemsConfig, 'must_have_board'), function (Builder $query) {
-                return $query->has('board');
-            })
-            ->when(Arr::get($recentItemsConfig, 'must_have_project'), function (Builder $query) {
-                return $query->has('project');
-            })
+            ->when(Arr::get($recentItemsConfig, 'must_have_board'), static fn (Builder $query) => $query->has('board'))
+            ->when(Arr::get($recentItemsConfig, 'must_have_project'), static fn (Builder $query) => $query->has('project'))
             ->limit(10);
     }
 
-    protected function isTablePaginationEnabled(): bool
-    {
+    protected function isTablePaginationEnabled() : bool {
         return false;
     }
 
-    protected function getTableRecordUrlUsing(): ?Closure
-    {
-        return function ($record) {
+    protected function getTableRecordUrlUsing() : ?Closure {
+        return static function ($record) {
             if (!$record->board) {
                 return route('items.show', $record);
             }
@@ -51,8 +49,7 @@ class RecentItems extends Component implements HasTable
         };
     }
 
-    protected function getTableColumns(): array
-    {
+    protected function getTableColumns() : array {
         return [
             Tables\Columns\TextColumn::make('title')->label(trans('table.title')),
             Tables\Columns\TextColumn::make('total_votes')->label(trans('table.total-votes'))->sortable(),
@@ -61,18 +58,11 @@ class RecentItems extends Component implements HasTable
         ];
     }
 
-    protected function getDefaultTableSortColumn(): ?string
-    {
+    protected function getDefaultTableSortColumn() : ?string {
         return 'created_at';
     }
 
-    protected function getDefaultTableSortDirection(): ?string
-    {
+    protected function getDefaultTableSortDirection() : ?string {
         return 'desc';
-    }
-
-    public function render()
-    {
-        return view('livewire.welcome.recent-items');
     }
 }

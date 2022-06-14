@@ -1,37 +1,35 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserSocial;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\SocialProviders\SsoProvider;
 use App\Providers\RouteServiceProvider;
-use Laravel\Socialite\Facades\Socialite;
+use App\SocialProviders\SsoProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
 
-class LoginController extends Controller
-{
+class LoginController extends Controller {
     use AuthenticatesUsers;
 
     protected $redirectTo = RouteServiceProvider::HOME;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('guest')->except('logout');
     }
 
-    public function redirectToProvider($provider = 'sso')
-    {
+    public function redirectToProvider($provider = 'sso') {
         return Socialite::driver($provider)->redirect();
     }
 
-    public function handleProviderCallback(Request $request, $provider = 'sso')
-    {
+    public function handleProviderCallback(Request $request, $provider = 'sso') {
         if ($request->input('error') === 'access_denied') {
             return redirect()->route('login')->withErrors([
-                'Denied access to login'
+                'Denied access to login',
             ]);
         }
 
@@ -57,16 +55,16 @@ class LoginController extends Controller
 
         if (!$user) {
             $user = User::create([
-                'name' => strstr($social->getEmail(), '@', true),
+                'name'  => mb_strstr($social->getEmail(), '@', true),
                 'email' => $social->getEmail(),
             ]);
 
             $user->userSocials()->create([
-                'name' => strstr($social->getEmail(), '@', true),
-                'provider' => 'sso',
-                'provider_id' => $social->getId(),
-                'access_token' => $social->token ? $social->token : null,
-                'refresh_token' => $social->refreshToken ? $social->refreshToken : null
+                'name'          => mb_strstr($social->getEmail(), '@', true),
+                'provider'      => 'sso',
+                'provider_id'   => $social->getId(),
+                'access_token'  => $social->token ? $social->token : null,
+                'refresh_token' => $social->refreshToken ? $social->refreshToken : null,
             ]);
 
             auth()->guard()->login($user, remember: true);
@@ -76,11 +74,11 @@ class LoginController extends Controller
 
         if ($user && !$userSocial) {
             $user->userSocials()->create([
-                'name' => strstr($social->getEmail(), '@', true),
-                'provider' => 'sso',
-                'provider_id' => $social->getId(),
-                'access_token' => $social->token ? $social->token : null,
-                'refresh_token' => $social->refreshToken ? $social->refreshToken : null
+                'name'          => mb_strstr($social->getEmail(), '@', true),
+                'provider'      => 'sso',
+                'provider_id'   => $social->getId(),
+                'access_token'  => $social->token ? $social->token : null,
+                'refresh_token' => $social->refreshToken ? $social->refreshToken : null,
             ]);
 
             auth()->guard()->login($user, remember: true);
@@ -91,8 +89,7 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 
-    public function showLoginForm()
-    {
+    public function showLoginForm() {
         if (SsoProvider::isForced()) {
             return to_route('oauth.login');
         }

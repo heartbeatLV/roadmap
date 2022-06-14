@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Services;
 
+use const PHP_EOL;
 use Spatie\Color\Hex;
 use Spatie\Color\Rgb;
 
-class Tailwind
-{
+class Tailwind {
     public array $shades = [];
-
     protected array $intensityMap = [
-        50 => 0.95,
+        50  => 0.95,
         100 => 0.9,
         200 => 0.75,
         300 => 0.6,
@@ -21,28 +22,25 @@ class Tailwind
         900 => 0.49,
     ];
 
-    public function __construct(public string $name, public string $baseColor)
-    {
+    public function __construct(public string $name, public string $baseColor) {
         $this->shades = $this->generateColorShades($name, $this->baseColor);
     }
 
-    public function getCssFormat(): string
-    {
+    public function getCssFormat() : string {
         $output = '<style>' . PHP_EOL;
-        $output.= ':root {' . PHP_EOL;
+        $output .= ':root {' . PHP_EOL;
 
         foreach ($this->shades as $shade => $color) {
-            $output.= "\t--color-{$shade}: {$color};" . PHP_EOL;
+            $output .= "\t--color-{$shade}: {$color};" . PHP_EOL;
         }
 
-        $output.= '}' . PHP_EOL;
-        $output.= '</style>';
+        $output .= '}' . PHP_EOL;
+        $output .= '</style>';
 
         return $output;
     }
 
-    public function generateColorShades(string $name, ?string $baseColor): array
-    {
+    public function generateColorShades(string $name, ?string $baseColor) : array {
         $baseColor = Hex::fromString($baseColor);
 
         $colors = [];
@@ -67,8 +65,7 @@ class Tailwind
         return $colors;
     }
 
-    protected function lighten(Hex $hex, float $intensity): Rgb
-    {
+    protected function lighten(Hex $hex, float $intensity) : Rgb {
         $color = $hex->toRgb();
 
         $r = round($color->red() + (255 - $color->red()) * $intensity);
@@ -78,8 +75,7 @@ class Tailwind
         return Rgb::fromString("rgb({$r}, {$g}, {$b})");
     }
 
-    protected function darken(Hex $hex, float $intensity): Rgb
-    {
+    protected function darken(Hex $hex, float $intensity) : Rgb {
         $color = $hex->toRgb();
 
         $r = round($color->red() * $intensity);

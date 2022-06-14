@@ -1,43 +1,38 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Pages;
 
-use Closure;
-use Storage;
-use Illuminate\Support\Str;
-use Filament\Pages\SettingsPage;
 use App\Settings\GeneralSettings;
-use Filament\Pages\Actions\Action;
-use Illuminate\Support\Collection;
-use Filament\Forms\Components\Tabs;
+use Closure;
 use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Toggle;
+use Filament\Pages\Actions\Action;
+use Filament\Pages\SettingsPage;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Storage;
 
-class Settings extends SettingsPage
-{
+class Settings extends SettingsPage {
+    public Collection $ogImages;
     protected static ?string $navigationIcon = 'heroicon-o-cog';
-
     protected static string $settings = GeneralSettings::class;
 
-    public Collection $ogImages;
-
-    public function mount(): void
-    {
+    public function mount() : void {
         parent::mount();
 
         $this->ogImages = collect(Storage::disk('public')->allFiles())
-            ->filter(function ($file) {
-                return Str::startsWith($file, 'og') && Str::endsWith($file, '.jpg');
-            });
+            ->filter(static fn ($file) => Str::startsWith($file, 'og') && Str::endsWith($file, '.jpg'));
     }
 
-    protected function getFormSchema(): array
-    {
+    protected function getFormSchema() : array {
         return [
             Tabs::make('main')
                 ->schema([
@@ -58,7 +53,7 @@ class Settings extends SettingsPage
                                     ->helperText('These boards will automatically be prefilled when you create a project.')
                                     ->columnSpan(2),
                             ])
-                                ->visible(fn ($get) => $get('create_default_boards')),
+                                ->visible(static fn ($get) => $get('create_default_boards')),
 
                             Toggle::make('show_projects_sidebar_without_boards')->label('Show projects in sidebar without boards')
                                 ->helperText('If you don\'t want to show projects without boards in the sidebar, toggle this off.')
@@ -79,9 +74,9 @@ class Settings extends SettingsPage
                                 ->reactive(),
 
                             Toggle::make('project_required_when_creating_item')
-                                  ->label('Project is required when creating an item')
-                                  ->hidden(fn (Closure $get) => $get('select_project_when_creating_item') === false)
-                                  ->columnSpan(2),
+                                ->label('Project is required when creating an item')
+                                ->hidden(static fn (Closure $get) => $get('select_project_when_creating_item') === false)
+                                ->columnSpan(2),
 
                             Toggle::make('select_board_when_creating_item')
                                 ->label('Users can select a board when creating an item')
@@ -90,7 +85,7 @@ class Settings extends SettingsPage
 
                             Toggle::make('board_required_when_creating_item')
                                 ->label('Board is required when creating an item')
-                                ->hidden(fn (Closure $get) => $get('select_board_when_creating_item') === false)
+                                ->hidden(static fn (Closure $get) => $get('select_board_when_creating_item') === false)
                                 ->columnSpan(2),
 
                             TextInput::make('password')->helperText('Entering a password here will ask your users to enter a password before entering the roadmap.'),
@@ -108,8 +103,8 @@ class Settings extends SettingsPage
                                     Select::make('type')
                                         ->reactive()
                                         ->options([
-                                            'recent-items' => 'Recent items',
-                                            'recent-comments' => 'Recent comments'
+                                            'recent-items'    => 'Recent items',
+                                            'recent-comments' => 'Recent comments',
                                         ])->default('recent-items'),
                                     Select::make('column_span')->options([
                                         1 => 1,
@@ -117,10 +112,10 @@ class Settings extends SettingsPage
                                     ])->default(1),
                                     Toggle::make('must_have_board')
                                         ->reactive()
-                                        ->visible(fn ($get) => $get('type') === 'recent-items')
+                                        ->visible(static fn ($get) => $get('type') === 'recent-items')
                                         ->helperText('Enable this to show items that have a board'),
                                     Toggle::make('must_have_project')
-                                        ->visible(fn ($get) => $get('must_have_board') && $get('type') === 'recent-items')
+                                        ->visible(static fn ($get) => $get('must_have_board') && $get('type') === 'recent-items')
                                         ->helperText('Enable this to show items that have a project'),
                                 ])->helperText('Determine which items you want to show on the dashboard (for all users).'),
                         ]),
@@ -139,21 +134,20 @@ class Settings extends SettingsPage
                     Tabs\Tab::make('SEO')
                         ->schema([
                             Toggle::make('block_robots')
-                                ->helperText('Instructs your roadmap to add the block robots META tag, it\'s up to the search engines to honor this request.')
-                        ])
+                                ->helperText('Instructs your roadmap to add the block robots META tag, it\'s up to the search engines to honor this request.'),
+                        ]),
                 ])
                 ->columns()
                 ->columnSpan(2),
         ];
     }
 
-    protected function getActions(): array
-    {
+    protected function getActions() : array {
         return [
             Action::make('flush_og_images')
-                ->action(function () {
+                ->action(function () : void {
                     $items = $this->ogImages
-                        ->each(function ($file) {
+                        ->each(static function ($file) : void {
                             Storage::disk('public')->delete($file);
                         });
 

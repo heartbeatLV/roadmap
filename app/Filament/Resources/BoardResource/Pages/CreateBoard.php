@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Filament\Resources\BoardResource\Pages;
 
 use App\Filament\Resources\BoardResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateBoard extends CreateRecord
-{
+class CreateBoard extends CreateRecord {
     protected static string $resource = BoardResource::class;
 }
