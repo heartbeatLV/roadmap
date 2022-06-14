@@ -124,7 +124,7 @@ class Item extends Model {
 
     protected function excerpt() : Attribute {
         return Attribute::make(
-            get: fn ($value) => Str::limit(strip_tags(str($this->attributes['content'])->markdown()->trim()), 150),
+            get: fn ($value) => Str::limit(strip_tags(str($this->attributes['content'])->markdown()->trim()->value), 150),
         );
     }
 }
