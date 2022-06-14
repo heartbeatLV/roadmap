@@ -30,6 +30,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar {
         'remember_token',
     ];
     protected $casts = [
+        'admin'                 => 'bool',
         'email_verified_at'     => 'datetime',
         'notification_settings' => 'array',
     ];
