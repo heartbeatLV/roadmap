@@ -99,6 +99,6 @@ class InboxResource extends Resource {
     }
 
     protected static function getNavigationBadge() : ?string {
-        return Item::query()->hasNoProjectAndBoard()->count();
+        return (string) Item::query()->hasNoProjectAndBoard()->count();
     }
 }
