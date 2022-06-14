@@ -41,7 +41,7 @@ class Tailwind {
     }
 
     public function generateColorShades(string $name, ?string $baseColor) : array {
-        $baseColor = Hex::fromString($baseColor);
+        $bc = Hex::fromString($baseColor);
 
         $colors = [];
 
@@ -50,7 +50,7 @@ class Tailwind {
 
         // LightShades
         foreach ($lightShades as $shade) {
-            $color = $this->lighten($baseColor, $this->intensityMap[$shade]);
+            $color = $this->lighten($bc, $this->intensityMap[$shade]);
             $colors[$name . '-' . $shade] = (string) $color;
         }
 
@@ -58,7 +58,7 @@ class Tailwind {
 
         // DarkShades
         foreach ($darkShades as $shade) {
-            $color = $this->darken($baseColor, $this->intensityMap[$shade]);
+            $color = $this->darken($bc, $this->intensityMap[$shade]);
             $colors[$name . '-' . $shade] = (string) $color;
         }
 
